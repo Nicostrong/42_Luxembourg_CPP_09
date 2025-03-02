@@ -6,27 +6,35 @@
 /*   By: nfordoxc <nfordoxc@42luxembourg.lu>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 14:02:56 by nfordoxc          #+#    #+#             */
-/*   Updated: 2025/02/27 14:12:35 by nfordoxc         ###   Luxembourg.lu     */
+/*   Updated: 2025/02/28 14:23:59 by nfordoxc         ###   Luxembourg.lu     */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include <fstream>
 #include "BitcoinExchange.hpp"
 
 int	main( int argc, char **argv )
 {
+	std::string	date;
+	double		rate;
+
 	if (argc != 2)
 	{
 		std::cout << "Usage:\n\t./btc [data_bitcoin].csv" << std::endl;
 		return (1);
 	}
-	std::ifstream	inFile(argv[1]);
-	if (!inFile)
+	try
 	{
-		std::cerr << "Error: Unable to read " << argv[1] << std::endl;
-		return (1);
+		BitcoinExchange	btc;
+		btc.loadData(argv[1]);
+		std::cout << "Enter a date to know the rate at this date (YYYY-MM-DD): ";
+		std::cin >> date;
+		rate = btc.getExchangeRate(date);
+		std::cout << "The rate at " << date << " is " << rate << std::endl;
 	}
-
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+	
 	return (0);
 }
