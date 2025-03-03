@@ -6,7 +6,7 @@
 #    By: nfordoxc <nfordoxc@42luxembourg.lu>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/17 17:58:03 by nfordoxc          #+#    #+#              #
-#    Updated: 2025/02/27 14:17:11 by nfordoxc         ###   Luxembourg.lu      #
+#    Updated: 2025/03/03 09:41:24 by nfordoxc         ###   Luxembourg.lu      #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,15 +25,15 @@ DEB_OPT			=	--tool=memcheck \
 					--show-leak-kinds=all
 
 
-ARG0			=	
+ARG0			=	toto
 
-ARG1			=	
+ARG1			=	toto tata
 
-ARG2			=	
+ARG2			=	toto.csv tata
 
-ARG3			=	
+ARG3			=	data.csv test
 
-ARG4			=	
+ARG4			=	data.csv test.txt
 
 RM				=	rm -f
 
@@ -220,7 +220,19 @@ $(NAME):	$(OBJ)
 
 deb:		$(NAME)
 	@echo "$(BBLUE)==========	RUN DEBUG MODE	==========$(RESET)"
-	$(DEB) $(DEB_OPT) ./$(NAME)
+ifeq ($(arg),ARG0)
+	$(DEB) $(DEB_OPT) ./$(NAME) $(ARG0)
+else ifeq ($(arg),ARG1)
+	$(DEB) $(DEB_OPT) ./$(NAME) $(ARG1)
+else ifeq ($(arg),ARG2)
+	$(DEB) $(DEB_OPT) ./$(NAME) $(ARG2)
+else ifeq ($(arg),ARG3)
+	$(DEB) $(DEB_OPT) ./$(NAME) $(ARG3)
+else ifeq ($(arg),ARG4)
+	$(DEB) $(DEB_OPT) ./$(NAME) $(ARG4)
+else
+	@echo "$(RESET)Usage: make deb arg=ARG0|ARG1|ARG2|ARG3|ARG4"
+endif
 
 clean:
 	$(call delete_progress, *.o)
