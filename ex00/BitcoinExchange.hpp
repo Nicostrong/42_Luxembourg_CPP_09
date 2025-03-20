@@ -6,7 +6,7 @@
 /*   By: nfordoxc <nfordoxc@42luxembourg.lu>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 14:03:50 by nfordoxc          #+#    #+#             */
-/*   Updated: 2025/03/04 15:53:41 by nfordoxc         ###   Luxembourg.lu     */
+/*   Updated: 2025/03/20 09:48:09 by nfordoxc         ###   Luxembourg.lu     */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ class BitcoinExchange
 		/*	Private Method	*/
 		void							loadData( std::string const &filename );
 		bool							isValidDate( const std::string &date ) const;
+		bool							isValidNbrbtc( const std::string &value ) const;
 
 	public:
 
@@ -73,7 +74,7 @@ class BitcoinExchange
 		BitcoinExchange 	&operator=( BitcoinExchange const &src_object );
 
 		/*	Method	*/
-		double				getExchangeRate( std::string const &date ) const;
+		double				getExchange( std::string const &date, std::string const &nbrbct ) const;
 
 		/*	Exception for open file	*/
 		class ErrorOpenFile:	public std::exception
@@ -85,7 +86,7 @@ class BitcoinExchange
 			public:
 
 				ErrorOpenFile( std::string const &filename ) throw();
-				virtual ~ErrorOpenFile() throw();
+				virtual ~ErrorOpenFile( void ) throw();
 				virtual const char	*what() const throw();
 
 		};
@@ -101,7 +102,7 @@ class BitcoinExchange
 			public:
 
 				BadDateInput( std::string const &date ) throw();
-				virtual ~BadDateInput() throw();
+				virtual ~BadDateInput( void ) throw();
 				virtual const char	*what() const throw();
 
 		};
@@ -117,7 +118,7 @@ class BitcoinExchange
 			public:
 
 				BadValueInput( std::string const &value ) throw();
-				virtual ~BadValueInput() throw();
+				virtual ~BadValueInput( void ) throw();
 				virtual const char	*what() const throw();
 
 		};

@@ -6,7 +6,7 @@
 /*   By: nfordoxc <nfordoxc@42luxembourg.lu>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 14:03:48 by nfordoxc          #+#    #+#             */
-/*   Updated: 2025/03/04 15:52:10 by nfordoxc         ###   Luxembourg.lu     */
+/*   Updated: 2025/03/20 10:04:56 by nfordoxc         ###   Luxembourg.lu     */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
  */
 BitcoinExchange::BitcoinExchange( void )
 {
-	loadData("data.csv" );
+	BitcoinExchange::loadData("data.csv" );
 	return ;
 }
 
@@ -48,9 +48,7 @@ BitcoinExchange::~BitcoinExchange( void )
 BitcoinExchange	&BitcoinExchange::operator=( BitcoinExchange const &src_object )
 {
 	if (this != &src_object)
-	{
 		this->_data = src_object._data;
-	}
 	return (*this);
 }
 
@@ -75,29 +73,35 @@ void			BitcoinExchange::loadData( std::string const &filename )
 	while (std::getline(file, line))
 	{
 		std::stringstream	ss(line);
-		if (std::getline(ss, date, ',') && (ss >> rate))
-			_data[date] = rate;
-		if (!isValidDate(date))
+		if (!(std::getline(ss, date, ',') && (ss >> rate)))
 		{
-			throw BitcoinExchange::BadDateInput(date);
+			std::cerr << RED << "Warning:\tCSV file with malformed line -> " << line << RESET << std::endl;
 			continue;
 		}
+		if (!BitcoinExchange::isValidDate(date))
+		{
+			std::cerr << RED << "Warning:\tCSV file with invalid date -> " << date << RESET << std::endl;
+			continue;
+		}
+		this->_data[date] = rate;
 	}
 	file.close();
-
+	return ;
 }
 
 /*
- *	Check if the date format is valid (YYYY-MM-DD)
+ *	Check if the date format is valid (YYYY-MM-DD) and if the date is valid
  */
-bool			BitcoinExchange::isValidDate(const std::string &date) const
+bool			BitcoinExchange::isValidDate( const std::string &date ) const
 {
 	int					year;
 	int					month;
 	int					day;
+	int					maxDays;
 	char				dash1;
 	char				dash2;
 	std::stringstream	ss(date);
+	static const int	daysInMonth[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
 	if (date.length() != 10 || date[4] != '-' || date[7] != '-')
 		return (false);
@@ -105,10 +109,25 @@ bool			BitcoinExchange::isValidDate(const std::string &date) const
 	ss >> year >> dash1 >> month >> dash2 >> day;
 	if (ss.fail() || dash1 != '-' || dash2 != '-')
 		return (false);
-	if (year < 2000 || month < 1 || month > 12 || day < 1 || day > 31)
+	if (month < 1 || month > 12)
 		return (false);
+	maxDays = daysInMonth[month - 1];
+	if (month == 2 && ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)))
+		maxDays = 29;
+	return (day >= 1 && day <= maxDays);
+}
 
-	return (true);
+/*
+ *	Check if the number of bitcoin is valid
+ */
+bool			BitcoinExchange::isValidNbrbtc( const std::string &value ) const
+{
+	double				nbrbtc;
+	std::stringstream	ss(value);
+	ss >> nbrbtc;
+	if (ss.fail() || !ss.eof())
+		return (false);
+	return (nbrbtc >= 0.0 && nbrbtc <= 1000.0);
 }
 
 /*******************************************************************************
@@ -118,19 +137,33 @@ bool			BitcoinExchange::isValidDate(const std::string &date) const
 /*
  *	Get the exchange rate for a given date
  */
-double			BitcoinExchange::getExchangeRate( std::string const &date ) const
+double			BitcoinExchange::getExchange( std::string const &date, std::string const &nbrbtc ) const
 {
 	std::map<std::string, double>::const_iterator	it;
+	double											totalValue;
+	double											btcAmount;
+	std::stringstream								ss(nbrbtc);
 	
-	it = _data.lower_bound(date);
-	if (it != _data.end() && it->first == date)
-		return (it->second);
-	if (it != _data.begin())
+	if (this->_data.empty())
+		throw std::runtime_error(RED"Error:\tNo exchange data available"RESET);
+	if (!BitcoinExchange::isValidDate(date))
+		throw BitcoinExchange::BadDateInput(date);
+	if (!BitcoinExchange::isValidNbrbtc(nbrbtc))
+		throw BitcoinExchange::BadValueInput(nbrbtc);
+	ss >> btcAmount;
+	it = this->_data.lower_bound(date);
+	if (it != this->_data.end() && it->first == date)
+	{
+		totalValue = it->second * btcAmount;
+		return (totalValue);
+	}
+	if (it != this->_data.begin())
 	{
 		--it;
-		return (it->second);
+		totalValue = it->second * btcAmount;
+		return (totalValue);
 	}
-	throw std::runtime_error("Date not found");
+	throw std::runtime_error(RED"Error:\tDate not found"RESET);
 }
 
 /*******************************************************************************
@@ -143,6 +176,14 @@ double			BitcoinExchange::getExchangeRate( std::string const &date ) const
 BitcoinExchange::BadDateInput::BadDateInput( std::string const &date ) throw()
 {
 	_msg = RED"Error:\tInvalid date input => " + date + RESET;
+	return ;
+}
+
+/*
+ *	BadDateInput destructor
+ */
+BitcoinExchange::BadDateInput::~BadDateInput( void ) throw()
+{
 	return ;
 }
 
@@ -162,6 +203,15 @@ BitcoinExchange::BadValueInput::BadValueInput( std::string const &value ) throw(
 	_msg = RED"Error:\tInvalid value input => " + value + RESET;
 	return ;
 }
+
+/*
+ *	BadValueInput destructor
+ */
+BitcoinExchange::BadValueInput::~BadValueInput( void ) throw()
+{
+	return ;
+}
+
 /*
  *	Exception BadValueInput
  */
@@ -176,6 +226,14 @@ const char		*BitcoinExchange::BadValueInput::what() const throw()
 BitcoinExchange::ErrorOpenFile::ErrorOpenFile( std::string const &filename ) throw()
 {
 	_msg = RED"Error:\tCannot open file => " + filename + RESET;
+	return ;
+}
+
+/*
+ *	ErrorOpenFile constructor
+ */
+BitcoinExchange::ErrorOpenFile::~ErrorOpenFile( void) throw()
+{
 	return ;
 }
 
