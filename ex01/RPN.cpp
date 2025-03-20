@@ -6,7 +6,7 @@
 /*   By: nfordoxc <nfordoxc@42luxembourg.lu>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 10:18:32 by nfordoxc          #+#    #+#             */
-/*   Updated: 2025/03/20 15:57:46 by nfordoxc         ###   Luxembourg.lu     */
+/*   Updated: 2025/03/20 16:06:32 by nfordoxc         ###   Luxembourg.lu     */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,6 +127,9 @@ void	RPN::processToken( const std::string &token )
  *								METHOD 										   *
  ******************************************************************************/
 
+ /*
+  *	Evaluate a reverse Polish notation
+  */
 int			RPN::evaluate( const std::string &expression )
 {
 	std::istringstream	iss(expression);
