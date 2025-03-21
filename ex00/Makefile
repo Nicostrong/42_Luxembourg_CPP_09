@@ -29,11 +29,11 @@ ARG0			=	toto
 
 ARG1			=	toto tata
 
-ARG2			=	toto.csv tata
+ARG2			=	tata
 
-ARG3			=	data.csv test
+ARG3			=	test
 
-ARG4			=	data.csv test.txt
+ARG4			=	test.txt
 
 RM				=	rm -f
 

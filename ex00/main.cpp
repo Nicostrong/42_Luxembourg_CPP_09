@@ -14,7 +14,7 @@
 
 void	readInputFile( const std::string &filename, BitcoinExchange &btc )
 {
-	std::ifstream	file(filename);
+	std::ifstream	file(filename.c_str());
 	std::string		line;
 
 	if (!file.is_open())
