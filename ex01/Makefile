@@ -25,16 +25,15 @@ DEB_OPT			=	--tool=memcheck \
 					--show-leak-kinds=all
 
 
-ARG0			=	toto
+ARG0			=	"2 4 6 8 1 3 5 7 9 * - + - / * + -"
 
-ARG1			=	toto tata
+ARG1			=	"2147483647 1 +"
 
-ARG2			=	toto.csv tata
+ARG2			=	"1 6 5 4 3 + * + +"
 
-ARG3			=	data.csv test
+ARG3			=	"7 8 * 7 * 4 - 1 + 9 / 5 +"
 
-ARG4			=	data.csv test.txt
-
+ARG4			=	" 3 6 // 7 %"
 RM				=	rm -f
 
 ################################################################################
