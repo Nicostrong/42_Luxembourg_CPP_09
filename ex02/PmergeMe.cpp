@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PmergeMe.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nfordoxc <nfordoxc@42luxembourg.lu>        +#+  +:+       +#+        */
+/*   By: nfordoxc <nfordoxc@42.luxembourg.lu>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 16:04:43 by nfordoxc          #+#    #+#             */
-/*   Updated: 2025/03/20 16:06:32 by nfordoxc         ###   Luxembourg.lu     */
+/*   Updated: 2025/03/21 09:47:19 by nfordoxc         ###   Luxembourg.lu     */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,3 @@
 /*******************************************************************************
  *								EXCEPTION 									   *
  ******************************************************************************/
-
-/*
- *	Division by zero exception
- */
-const char	*RPN::DivByZero::what() const throw()
-{
-	return (RED"Error:\tDivision by zero."RESET);
-}
