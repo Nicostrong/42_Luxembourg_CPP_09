@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: nfordoxc <nfordoxc@42luxembourg.lu>        +#+  +:+       +#+         #
+#    By: nfordoxc <nfordoxc@42.luxembourg.lu>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/17 17:58:03 by nfordoxc          #+#    #+#              #
-#    Updated: 2025/03/20 16:04:45 by nfordoxc         ###   Luxembourg.lu      #
+#    Updated: 2025/03/21 14:03:04 by nfordoxc         ###   Luxembourg.lu      #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,15 +25,15 @@ DEB_OPT			=	--tool=memcheck \
 					--show-leak-kinds=all
 
 
-ARG0			=	toto
+ARG0			=	8 2 12 5 4 9 27 11 0 1 6 13 19 15 3
 
-ARG1			=	toto tata
+ARG1			=	6 5 4 3 2 1 0
 
-ARG2			=	toto.csv tata
+ARG2			=	
 
-ARG3			=	data.csv test
+ARG3			=	
 
-ARG4			=	data.csv test.txt
+ARG4			=	
 
 RM				=	rm -f
 
