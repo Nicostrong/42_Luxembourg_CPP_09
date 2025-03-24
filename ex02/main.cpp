@@ -6,7 +6,7 @@
 /*   By: nfordoxc <nfordoxc@42.luxembourg.lu>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 16:08:23 by nfordoxc          #+#    #+#             */
-/*   Updated: 2025/03/21 14:21:03 by nfordoxc         ###   Luxembourg.lu     */
+/*   Updated: 2025/03/24 10:35:22 by nfordoxc         ###   Luxembourg.lu     */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,8 @@ std::list<int>	ft_sort( std::list<int> *listToSort)
 
 int		main(int argc, char **argv)
 {
-	std::list<int>	toSort;
-	std::list<int>	lst1;
-	std::list<int>	lst2;
-	std::list<int>	lst3;
-	std::list<int>	lst4;
+	std::list<int>		lsttoSort;
+	std::vector<int>	vecToSort;
 
 	if (argc == 1)
 	{
