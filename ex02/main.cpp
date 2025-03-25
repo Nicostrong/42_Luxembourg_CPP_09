@@ -6,52 +6,46 @@
 /*   By: nfordoxc <nfordoxc@42.luxembourg.lu>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 16:08:23 by nfordoxc          #+#    #+#             */
-/*   Updated: 2025/03/24 10:35:22 by nfordoxc         ###   Luxembourg.lu     */
+/*   Updated: 2025/03/25 09:12:33 by nfordoxc         ###   Luxembourg.lu     */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PmergeMe.hpp"
 
-std::list<int>	ft_sort( std::list<int> *listToSort)
-{
-	std::list<int>	listSorted;
-
-	listSorted.push_back((*listToSort).front());
-	(*listToSort).pop_front();
-	if (listSorted.front() > (*listToSort).front())
-		listSorted.push_front((*listToSort).front());
-	else
-		listSorted.push_back((*listToSort).front());
-	(*listToSort).pop_front();
-
-	std::cout << "List sorted" << std::endl;
-	std::list<int>::iterator	it;
-	for (it = listSorted.begin(); it != listSorted.end(); it++)
-		std::cout << *it << " / ";
-	std::cout << std::endl;
-	return (listSorted);
-}
-
+/*
+ *	1) verifier le nombre d arguments
+ *	2) lire les arguments et les enregistrer dans une list
+ *	3) lire les arguments et les enregistrer dans un vecteur
+ *	4) Afficher la liste initiale
+ *	5) lancer le chrono
+ *	6) trier la list
+ *	7) arreter le chrono et afficher la liste avec le temps
+ *	8) Afficher le vecteur initiale
+ *	9) lancer le chrono
+ *	10) trier le vecteur
+ *	11) arreter le chrono et afficher le vecteuravec le temps
+ */
 int		main(int argc, char **argv)
 {
-	std::list<int>		lsttoSort;
+	std::list<int>		lstToSort;
 	std::vector<int>	vecToSort;
 
+	//	check number of arguments
 	if (argc == 1)
 	{
 		std::cerr << "Usage: ./PmergeMe [nbr1] [nbr2] ... [nbrn]" << std::endl;
 		return (1);
 	}
-	for (int i = 1; i < argc; i++)
-		toSort.push_back(atoi(argv[i]));
+	//	put arg on list
+	lstToSort = PmergeMe::createList(&argv, argc);
 
-	std::cout << "List to sort" << std::endl;
-	std::list<int>::iterator	it;
-	for (it = toSort.begin(); it != toSort.end(); it++)
-		std::cout << *it << " / ";
-	std::cout << std::endl;
-	lst1 = ft_sort(&toSort);
-	lst2 = ft_sort(&toSort);
-	lst3 = ft_sort(&toSort);
+	//	put args on vector
+	vecToSort = PmergeMe::createVector(argv, argc);
+
+	//	print initial list
+	PmergeMe::printList(lstToSort);
+	//	print initial vector
+	PmergeMe::printVector(vecToSort);
+
 	return (0);
 }

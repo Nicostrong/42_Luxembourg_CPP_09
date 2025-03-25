@@ -6,7 +6,7 @@
 /*   By: nfordoxc <nfordoxc@42.luxembourg.lu>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 16:04:33 by nfordoxc          #+#    #+#             */
-/*   Updated: 2025/03/24 10:23:26 by nfordoxc         ###   Luxembourg.lu     */
+/*   Updated: 2025/03/25 09:21:35 by nfordoxc         ###   Luxembourg.lu     */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <vector>
 # include <list>
 # include <cstdlib>
+# include <climits>
 # include <exception>
 
 # define RESET		"\033[0m"
@@ -26,6 +27,9 @@ class   PmergeMe
 {
 	private:
 
+		/*	PRIVATE METHOD	*/
+		int		ft_atoi( std::string *toConvert );
+		
 		/*	LIST	*/
 		std::list<int>			makeElementList( std::list<int> &lstToGroup );
 		
@@ -36,13 +40,13 @@ class   PmergeMe
 	public:
 
 		/*	LIST	*/
-		static std::list<int>	createList( std::string argv[] );
-		static std::list<int>	sortList( const std::list<int> &lstToSort );
+		static std::list<int>	createList( char **argv, int argc );
+		static void				sortList( std::list<int> &lstToSort );
 		static void				printList( const std::list<int> &lstToPrint );
 
 		/*	VECTOR	*/
-		static std::vector<int>	createVector( std::string argv[] );
-		static std::vector<int>	sortVector( const std::vector<int> vecToSort );
+		static std::vector<int>	createVector( char **argv, int argc );
+		static void				sortVector( std::vector<int>& vecToSort );
 		static void				printVector( const std::vector<int> vecToPrint );
 	
 		/*	Valid input integer positif	*/
