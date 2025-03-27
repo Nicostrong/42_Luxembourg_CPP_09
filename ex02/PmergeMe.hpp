@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PmergeMe.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nfordoxc <nfordoxc@42.luxembourg.lu>       +#+  +:+       +#+        */
+/*   By: nfordoxc <nfordoxc@42luxembourg.lu>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 16:04:33 by nfordoxc          #+#    #+#             */
-/*   Updated: 2025/03/25 09:21:35 by nfordoxc         ###   Luxembourg.lu     */
+/*   Updated: 2025/03/27 11:19:51 by nfordoxc         ###   Luxembourg.lu     */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,27 +16,25 @@
 # include <iostream>
 # include <vector>
 # include <list>
+# include <set>
 # include <cstdlib>
 # include <climits>
 # include <exception>
+# include <ctime>
 
 # define RESET		"\033[0m"
 # define RED		"\033[31m"
+# define GREEN		"\033[32m"
+# define YELLOW		"\033[33m"
+# define BLUE		"\033[34m"
 
 class   PmergeMe
 {
 	private:
 
 		/*	PRIVATE METHOD	*/
-		int		ft_atoi( std::string *toConvert );
+		static int				ft_atoi( char *toConvert );
 		
-		/*	LIST	*/
-		std::list<int>			makeElementList( std::list<int> &lstToGroup );
-		
-		/*	VECTOR	*/
-		std::vector<int>		makeElementVector( std::vector<int> &vecToGroup );
-
-	
 	public:
 
 		/*	LIST	*/
@@ -49,8 +47,8 @@ class   PmergeMe
 		static void				sortVector( std::vector<int>& vecToSort );
 		static void				printVector( const std::vector<int> vecToPrint );
 	
-		/*	Valid input integer positif	*/
-		class	BadValueInput: public std::exception
+		/*	Exception for not numeric input	*/
+		class	NoNumericValueInput: public std::exception
 		{
 
 				public:
@@ -59,6 +57,25 @@ class   PmergeMe
 
 		};
 
+		/*	Exception for negative input value */
+		class	NegativeValueInput: public std::exception
+		{
+
+				public:
+
+					const char	*what() const throw();
+
+		};
+
+		/*	Exception for int overflow input value */
+		class	NotIntegerValue: public std::exception
+		{
+
+				public:
+
+					const char	*what() const throw();
+
+		};
 };
 
 #endif

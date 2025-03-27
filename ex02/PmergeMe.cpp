@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PmergeMe.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nfordoxc <nfordoxc@42.luxembourg.lu>       +#+  +:+       +#+        */
+/*   By: nfordoxc <nfordoxc@42luxembourg.lu>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 16:04:43 by nfordoxc          #+#    #+#             */
-/*   Updated: 2025/03/25 09:44:23 by nfordoxc         ###   Luxembourg.lu     */
+/*   Updated: 2025/03/27 16:49:15 by nfordoxc         ###   Luxembourg.lu     */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,70 +16,67 @@
  *							PRIVATE METHOD 									   *
  ******************************************************************************/
 
-int		ft_atoi( char *toConvert )
+int					PmergeMe::ft_atoi( char *toConvert )
 {
-	
-	char		*s;
 	long long	nb;
 
 	nb = 0;
+	if (!toConvert || !*toConvert)
+		throw PmergeMe::NoNumericValueInput();
 	while (std::isspace(*toConvert))
 		toConvert++;
-	if (*toConvert == '-' || *s == '+')
+	if (*toConvert == '-')
+		throw PmergeMe::NegativeValueInput();
+	if (*toConvert == '+')
 		toConvert++;
+	if (!std::isdigit(*toConvert))
+		throw PmergeMe::NoNumericValueInput();
 	while (std::isdigit(*toConvert))
 	{
 		nb = (nb * 10) + (*toConvert - '0');
 		toConvert++;
 	}
 	if (nb > INT_MAX || nb < INT_MIN)
-		return (-1);
-	return ((int)nb);
+		throw PmergeMe::NotIntegerValue();
+	if (*toConvert)
+		throw PmergeMe::NoNumericValueInput();
+	return (static_cast<int>(nb));
 }
-
-/*******************************************************************************
- *							PRIVATE LIST									   *
- ******************************************************************************/
-
-std::list<int>			makeElementList( std::list<int> &lstToGroup );
-
-
-
-/*******************************************************************************
- *							PRIVATE VECTOR									   *
- ******************************************************************************/
-
-std::vector<int>		makeElementVector( std::vector<int> &vecToGroup );
-
 
 /*******************************************************************************
  *								LIST 										   *
  ******************************************************************************/
 
-static std::list<int>	createList( char **argv, int argc )
+std::list<int>		PmergeMe::createList( char **argv, int argc )
 {
-	std::list<int>	lstToReturn;
 	int				value;
+	std::list<int>	lstToReturn;
 
-	for (size_t i = 1; i < argc; i++)
+	for (int i = 1; i < argc; i++)
 	{
 		value = -1;
-		value = ft_atoi(argv[i]);
-		if (value < 0)
-			throw PmergeMe::BadValueInput();
+		try
+		{
+			value = PmergeMe::ft_atoi(argv[i]);
+		}
+		catch(const std::exception& e)
+		{
+			std::cerr << e.what() << std::endl;
+			return (std::list<int>());
+		}
 		lstToReturn.push_back(value);
 	}
 	return (lstToReturn);
 }
 
-static void	sortList( std::list<int> &lstToSort )
+void				PmergeMe::sortList( std::list<int> &lstToSort )
 {
-	std::list<int>	sorted;
-	std::list<int>	pendings;
+	std::list<std::pair<int, int> >	pairs;
+	std::list<int>					sorted;
+	std::list<int>					pendings;
 
 	if (lstToSort.size() <= 1)
-		return;
-
+		return ;
 	for (std::list<int>::iterator it = lstToSort.begin(); it != lstToSort.end(); )
 	{
 		int first = *it;
@@ -88,7 +85,9 @@ static void	sortList( std::list<int> &lstToSort )
 		{
 			int second = *it;
 			++it;
-			if (first > second) std::swap(first, second);
+			if (first > second)
+				std::swap(first, second);
+			pairs.push_back(std::make_pair(first, second));
 			sorted.push_back(first);
 			pendings.push_back(second);
 		}
@@ -104,37 +103,59 @@ static void	sortList( std::list<int> &lstToSort )
 	return ;
 }
 
-static void				printList( const std::list<int> &lstToPrint )
+void				PmergeMe::printList( const std::list<int> &lstToPrint )
 {
-	std::list<int>::iterator	it;
+	std::list<int>::const_iterator	it;
 
+	if (lstToPrint.empty())
+		return ;
 	for (it = lstToPrint.begin(); it != lstToPrint.end(); it++)
-		std::cout << *it << " / ";
+		std::cout << *it << " ";
 	std::cout << std::endl;
 	return ;
 }
-
 
 /*******************************************************************************
  *								VECTOR										   *
  ******************************************************************************/
 
-static std::vector<int>	createVector( char **argv, int argc );
-
-static void				sortVector( std::vector<int>& vecToSort )
+std::vector<int>	PmergeMe::createVector( char **argv, int argc )
 {
-	std::vector<int> sorted;
-	std::vector<int> pendings;
+	int					value;
+	std::vector<int>	vecToReturn;
+
+	for (int i = 1; i < argc; i++)
+	{
+		value = -1;
+		try
+		{
+			value = PmergeMe::ft_atoi(argv[i]);
+		}
+		catch(const std::exception& e)
+		{
+			std::cerr << e.what() << std::endl;
+			return (std::vector<int>());
+		}
+		vecToReturn.push_back(value);
+	}
+	return (vecToReturn);
+}
+
+void				PmergeMe::sortVector( std::vector<int>& vecToSort )
+{
+	std::vector<std::pair<int, int> >	pairs;
+	std::vector<int>					sorted;
+	std::vector<int>					pendings;
 
 	if (vecToSort.size() <= 1)
 		return;
-
 	for (size_t i = 0; i < vecToSort.size(); i += 2)
 	{
 		if (i + 1 < vecToSort.size())
 		{
 			if (vecToSort[i] > vecToSort[i + 1])
 				std::swap(vecToSort[i], vecToSort[i + 1]);
+			pairs.push_back(std::make_pair(vecToSort[i], vecToSort[i + 1]));
 			sorted.push_back(vecToSort[i]);
 			pendings.push_back(vecToSort[i + 1]);
 		}
@@ -146,17 +167,44 @@ static void				sortVector( std::vector<int>& vecToSort )
 	for (size_t i = 0; i < pendings.size(); ++i)
 		sorted.insert(std::lower_bound(sorted.begin(), sorted.end(), pendings[i]), pendings[i]);
 	
-	vecToSort = sorted;
+	vecToSort.swap(sorted);
 	return ;
 }
 
-static void				printVector( const std::vector<int> vecToPrint );
-	
+void				PmergeMe::printVector( const std::vector<int> vecToPrint )
+{
+	if (vecToPrint.empty())
+		return ;
+	for (size_t i = 0; i < vecToPrint.size(); i++)
+		std::cout << vecToPrint[i] << " ";
+	std::cout << std::endl;
+	return ;
+}
+
 /*******************************************************************************
  *								EXCEPTION 									   *
  ******************************************************************************/
 
-const char	*PmergeMe::BadValueInput::what() const throw()
+/*
+ *	Exception for not numeric input
+ */
+const char			*PmergeMe::NoNumericValueInput::what() const throw()
 {
-	return (RED"Error: bad value input"RESET);
+	return (RED"Error: no numeric value input"RESET);
+}
+
+/*
+ *	Exception for negative input value
+ */
+const char			*PmergeMe::NegativeValueInput::what() const throw()
+{
+	return (RED"Error: negative value input"RESET);
+}
+
+/*
+ *	Exception for int overflow input value
+ */
+const char			*PmergeMe::NotIntegerValue::what() const throw()
+{
+	return (RED"Error: int overflow value input"RESET);
 }
