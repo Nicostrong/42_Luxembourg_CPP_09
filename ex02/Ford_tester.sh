@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Ford_tester.sh                                     :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: nfordoxc <nfordoxc@42luxembourg.lu>        +#+  +:+       +#+         #
+#    By: nfordoxc <nfordoxc@42.luxembourg.lu>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/27 11:31:45 by nfordoxc          #+#    #+#              #
-#    Updated: 2025/03/27 17:59:26 by nfordoxc         ###   Luxembourg.lu      #
+#    Updated: 2025/03/28 08:55:05 by nfordoxc         ###   Luxembourg.lu      #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,13 +22,15 @@ bad_params=(
 	"2147483648 0"
 	"2 7,3 5"
 	"8 6 2a 0"
-	"6 2 \"'5'\" 0"
+	"6 2 jlkshdfg jklshfg sjdlkgh dsjkgh sdjkgh sdf 0"
 )
 
 good_params=(
 	"9 8 7 6 5 4 3 2 1 0"
 	"9 9 8 8 7 7 6 6 5 5 4 4 3 3 2 2 1 1 0 0"
 	"2136474847 500 2 0"
+	"5 6 2 0"
+	"42 42 42 42 42 42 42 42 42 42 42 42"
 )
 
 big_params_mac=(
@@ -114,8 +116,13 @@ do
 	echo -e "\033[1;94mTEST $((i + 1)): ./$NAME ${good_params[i]}\033[1;93m"
 	./$NAME ${good_params[i]} &> $TEMPFILE
 
-	sed -i '.bak' -E 's/\x1b\[[0-9;]*m//g' $TEMPFILE
-
+	if [[ "$OS" == "Linux" ]]; then
+		sed -i -E 's/\x1b\[[0-9;]*m//g' $TEMPFILE
+	else
+		sed -i 'bak' -E 's/\x1b\[[0-9;]*m//g' $TEMPFILE
+	fi
+	#sed -i 'bak' -E 's/\x1b\[[0-9;]*m//g' $TEMPFILE
+	
 	container_1=$(awk -F': ' 'NR == 3 { print $2 }' "$TEMPFILE" | xargs)
 	container_2=$(awk -F': ' 'NR == 4 { print $2 }' "$TEMPFILE" | xargs)
 
@@ -181,8 +188,13 @@ do
 	eval ${big_params[i]} > params
 	./$NAME $(cat params) &> $TEMPFILE
 	
-	sed -i '.bak' -E 's/\x1b\[[0-9;]*m//g' $TEMPFILE
-	
+	if [[ "$OS" == "Linux" ]]; then
+		sed -i -E 's/\x1b\[[0-9;]*m//g' $TEMPFILE
+	else
+		sed -i 'bak' -E 's/\x1b\[[0-9;]*m//g' $TEMPFILE
+	fi
+	#sed -i 'bak' -E 's/\x1b\[[0-9;]*m//g' $TEMPFILE
+
 	container_1=$(awk -F': ' 'NR == 3 { print $2 }' "$TEMPFILE" | xargs)
 	container_2=$(awk -F': ' 'NR == 4 { print $2 }' "$TEMPFILE" | xargs)
 
@@ -232,142 +244,144 @@ do
 	rm params
 done
 
-echo -e "\033[1;94m _______   ______   _______    _______      __\033[0m"
-echo -e "\033[1;94m|__   __| |  ____| |   ____|  |__   __|    |  |   __\033[0m"
-echo -e "\033[1;94m   | |    | |___   |  |____      | |       |  |__|  |\033[0m"
-echo -e "\033[1;94m   | |    |  ___|  |_____  |     | |       |_____   |\033[0m"
-echo -e "\033[1;94m   | |    | |____   _____| |     | |             |  |\033[0m"
-echo -e "\033[1;94m   |_|    |______| |_______|     |_|             |__|\033[0m"
-echo ""
-echo -e "\t\t\033[1;93mBAD ARGUMENTS VALGRIND.\033[0m"
-echo ""
+if [[ "$OS" == "Linux" ]]; then
+	echo -e "\033[1;94m _______   ______   _______    _______      __\033[0m"
+	echo -e "\033[1;94m|__   __| |  ____| |   ____|  |__   __|    |  |   __\033[0m"
+	echo -e "\033[1;94m   | |    | |___   |  |____      | |       |  |__|  |\033[0m"
+	echo -e "\033[1;94m   | |    |  ___|  |_____  |     | |       |_____   |\033[0m"
+	echo -e "\033[1;94m   | |    | |____   _____| |     | |             |  |\033[0m"
+	echo -e "\033[1;94m   |_|    |______| |_______|     |_|             |__|\033[0m"
+	echo ""
+	echo -e "\t\t\033[1;93mBAD ARGUMENTS VALGRIND.\033[0m"
+	echo ""
 
-for i in "${!bad_params[@]}"
-do
-	TEMPFILE=$(mktemp)
-	echo -e "\033[1;94mTEST VALGRIND $((i + 1)): ./$NAME ${bad_params[i]}\033[1;93m"
-	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --track-fds=yes ./$NAME ${bad_params[i]} &> $TEMPFILE
+	for i in "${!bad_params[@]}"
+	do
+		TEMPFILE=$(mktemp)
+		echo -e "\033[1;94mTEST VALGRIND $((i + 1)): ./$NAME ${bad_params[i]}\033[1;93m"
+		valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --track-fds=yes ./$NAME ${bad_params[i]} &> $TEMPFILE
 
-	def_lost_bytes=$(grep "definitely lost:" $TEMPFILE | awk '{print $4}')
-	ind_lost_bytes=$(grep "indirectly lost:" $TEMPFILE | awk '{print $4}')
-	pos_lost_bytes=$(grep "possibly lost:" $TEMPFILE | awk '{print $4}')
-	still_reach_bytes=$(grep "still reachable:" $TEMPFILE | awk '{print $4}')
-	suppressed_bytes=$(grep "suppressed:" $TEMPFILE | awk '{print $4}')
+		def_lost_bytes=$(grep "definitely lost:" $TEMPFILE | awk '{print $4}')
+		ind_lost_bytes=$(grep "indirectly lost:" $TEMPFILE | awk '{print $4}')
+		pos_lost_bytes=$(grep "possibly lost:" $TEMPFILE | awk '{print $4}')
+		still_reach_bytes=$(grep "still reachable:" $TEMPFILE | awk '{print $4}')
+		suppressed_bytes=$(grep "suppressed:" $TEMPFILE | awk '{print $4}')
 
-	if [[ $def_lost_bytes -gt 0 || $ind_lost_bytes -gt 0 || $pos_lost_bytes -gt 0 || $still_reach_bytes -gt 0 || $suppressed_bytes -gt 0 ]]; then
-		echo -e "\033[1;91m❌ Memory leaks detected :\033[0m"
-		grep -E "definitely lost:|indirectly lost:|possibly lost:|still reachable:|suppressed:" $TEMPFILE
-		((error_count++))
-	else
-		echo -e "\033[1;92m✅ No memory leaks detected.\033[0m"
-	fi
+		if [[ $def_lost_bytes -gt 0 || $ind_lost_bytes -gt 0 || $pos_lost_bytes -gt 0 || $still_reach_bytes -gt 0 || $suppressed_bytes -gt 0 ]]; then
+			echo -e "\033[1;91m❌ Memory leaks detected :\033[0m"
+			grep -E "definitely lost:|indirectly lost:|possibly lost:|still reachable:|suppressed:" $TEMPFILE
+			((error_count++))
+		else
+			echo -e "\033[1;92m✅ No memory leaks detected.\033[0m"
+		fi
 
-	HEAP_USAGE=$(grep -E "total heap usage:|in use at exit:" $TEMPFILE)
-	if [ -n "$HEAP_USAGE" ]; then
-		echo -e "\033[1;94total heap usage :\033[0m"
-		echo "$HEAP_USAGE"
-	fi
+		HEAP_USAGE=$(grep -E "total heap usage:|in use at exit:" $TEMPFILE)
+		if [ -n "$HEAP_USAGE" ]; then
+			echo -e "\033[1;94 Total heap usage :\033[0m"
+			echo "$HEAP_USAGE"
+		fi
 
-	ERROR_SUMMARY=$(grep -E "ERROR SUMMARY:" $TEMPFILE)
-	if [ -n "$ERROR_SUMMARY" ]; then
-		echo -e "\033[1;94mERROR SUMMARY:\033[0m"
-		echo "$ERROR_SUMMARY"
-	fi
+		ERROR_SUMMARY=$(grep -E "ERROR SUMMARY:" $TEMPFILE)
+		if [ -n "$ERROR_SUMMARY" ]; then
+			echo -e "\033[1;94mERROR SUMMARY:\033[0m"
+			echo "$ERROR_SUMMARY"
+		fi
 
-	rm $TEMPFILE
-done
+		rm $TEMPFILE
+	done
 
-echo ""
-echo -e "\033[1;94m _______   ______   _______    _______       __        __\033[0m"
-echo -e "\033[1;94m|__   __| |  ____| |   ____|  |__   __|      \\ \\      / /\033[0m"
-echo -e "\033[1;94m   | |    | |___   |  |____      | |          \\ \\    / /\033[0m"
-echo -e "\033[1;94m   | |    |  ___|  |_____  |     | |           \\ \\  / /\033[0m"
-echo -e "\033[1;94m   | |    | |____   _____| |     | |            \\ \\/ /\033[0m"
-echo -e "\033[1;94m   |_|    |______| |_______|     |_|             \\\__/\033[0m"
-echo ""
-echo -e "\t\t\033[1;93mGOOD ARGUMENTS VALGRIND.\033[0m"
-echo ""
+	echo ""
+	echo -e "\033[1;94m _______   ______   _______    _______       __        __\033[0m"
+	echo -e "\033[1;94m|__   __| |  ____| |   ____|  |__   __|      \\ \\      / /\033[0m"
+	echo -e "\033[1;94m   | |    | |___   |  |____      | |          \\ \\    / /\033[0m"
+	echo -e "\033[1;94m   | |    |  ___|  |_____  |     | |           \\ \\  / /\033[0m"
+	echo -e "\033[1;94m   | |    | |____   _____| |     | |            \\ \\/ /\033[0m"
+	echo -e "\033[1;94m   |_|    |______| |_______|     |_|             \\\__/\033[0m"
+	echo ""
+	echo -e "\t\t\033[1;93mGOOD ARGUMENTS VALGRIND.\033[0m"
+	echo ""
 
-for i in "${!good_params[@]}"
-do
-	TEMPFILE=$(mktemp)
-	echo -e "\033[1;94mTEST VALGRIND $((i + 1)): ./$NAME ${good_params[i]}\033[1;93m"
-	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --track-fds=yes ./$NAME ${good_params[i]} &> $TEMPFILE
+	for i in "${!good_params[@]}"
+	do
+		TEMPFILE=$(mktemp)
+		echo -e "\033[1;94mTEST VALGRIND $((i + 1)): ./$NAME ${good_params[i]}\033[1;93m"
+		valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --track-fds=yes ./$NAME ${good_params[i]} &> $TEMPFILE
 
-	def_lost_bytes=$(grep "definitely lost:" $TEMPFILE | awk '{print $4}')
-	ind_lost_bytes=$(grep "indirectly lost:" $TEMPFILE | awk '{print $4}')
-	pos_lost_bytes=$(grep "possibly lost:" $TEMPFILE | awk '{print $4}')
-	still_reach_bytes=$(grep "still reachable:" $TEMPFILE | awk '{print $4}')
-	suppressed_bytes=$(grep "suppressed:" $TEMPFILE | awk '{print $4}')
+		def_lost_bytes=$(grep "definitely lost:" $TEMPFILE | awk '{print $4}')
+		ind_lost_bytes=$(grep "indirectly lost:" $TEMPFILE | awk '{print $4}')
+		pos_lost_bytes=$(grep "possibly lost:" $TEMPFILE | awk '{print $4}')
+		still_reach_bytes=$(grep "still reachable:" $TEMPFILE | awk '{print $4}')
+		suppressed_bytes=$(grep "suppressed:" $TEMPFILE | awk '{print $4}')
 
-	if [[ $def_lost_bytes -gt 0 || $ind_lost_bytes -gt 0 || $pos_lost_bytes -gt 0 || $still_reach_bytes -gt 0 || $suppressed_bytes -gt 0 ]]; then
-		echo -e "\033[1;91m❌ Memory leaks detected :\033[0m"
-		grep -E "definitely lost:|indirectly lost:|possibly lost:|still reachable:|suppressed:" $TEMPFILE
-		((error_count++))
-	else
-		echo -e "\033[1;92m✅ No memory leaks detected.\033[0m"
-	fi
+		if [[ $def_lost_bytes -gt 0 || $ind_lost_bytes -gt 0 || $pos_lost_bytes -gt 0 || $still_reach_bytes -gt 0 || $suppressed_bytes -gt 0 ]]; then
+			echo -e "\033[1;91m❌ Memory leaks detected :\033[0m"
+			grep -E "definitely lost:|indirectly lost:|possibly lost:|still reachable:|suppressed:" $TEMPFILE
+			((error_count++))
+		else
+			echo -e "\033[1;92m✅ No memory leaks detected.\033[0m"
+		fi
 
-	HEAP_USAGE=$(grep -E "total heap usage:|in use at exit:" $TEMPFILE)
-	if [ -n "$HEAP_USAGE" ]; then
-		echo -e "\033[1;94total heap usage :\033[0m"
-		echo "$HEAP_USAGE"
-	fi
+		HEAP_USAGE=$(grep -E "total heap usage:|in use at exit:" $TEMPFILE)
+		if [ -n "$HEAP_USAGE" ]; then
+			echo -e "\033[1;9 Total heap usage :\033[0m"
+			echo "$HEAP_USAGE"
+		fi
 
-	ERROR_SUMMARY=$(grep -E "ERROR SUMMARY:" $TEMPFILE)
-	if [ -n "$ERROR_SUMMARY" ]; then
-		echo -e "\033[1;94mERROR SUMMARY:\033[0m"
-		echo "$ERROR_SUMMARY"
-	fi
+		ERROR_SUMMARY=$(grep -E "ERROR SUMMARY:" $TEMPFILE)
+		if [ -n "$ERROR_SUMMARY" ]; then
+			echo -e "\033[1;94mERROR SUMMARY:\033[0m"
+			echo "$ERROR_SUMMARY"
+		fi
 
-	rm $TEMPFILE
-done
+		rm $TEMPFILE
+	done
 
-echo ""
-echo -e "\033[1;94m _______   ______   _______    _______       __        __  _\033[0m"
-echo -e "\033[1;94m|__   __| |  ____| |   ____|  |__   __|      \\ \\      / / | |\033[0m"
-echo -e "\033[1;94m   | |    | |___   |  |____      | |          \\ \\    / /  | |\033[0m"
-echo -e "\033[1;94m   | |    |  ___|  |_____  |     | |           \\ \\  / /   | |\033[0m"
-echo -e "\033[1;94m   | |    | |____   _____| |     | |            \\ \\/ /    | |\033[0m"
-echo -e "\033[1;94m   |_|    |______| |_______|     |_|             \\__/     |_|\033[0m"
-echo ""
-echo -e "\t\t\033[1;93mBIG ARGUMENTS VALGRIND.\033[0m"
-echo ""
+	echo ""
+	echo -e "\033[1;94m _______   ______   _______    _______       __        __  _\033[0m"
+	echo -e "\033[1;94m|__   __| |  ____| |   ____|  |__   __|      \\ \\      / / | |\033[0m"
+	echo -e "\033[1;94m   | |    | |___   |  |____      | |          \\ \\    / /  | |\033[0m"
+	echo -e "\033[1;94m   | |    |  ___|  |_____  |     | |           \\ \\  / /   | |\033[0m"
+	echo -e "\033[1;94m   | |    | |____   _____| |     | |            \\ \\/ /    | |\033[0m"
+	echo -e "\033[1;94m   |_|    |______| |_______|     |_|             \\__/     |_|\033[0m"
+	echo ""
+	echo -e "\t\t\033[1;93mBIG ARGUMENTS VALGRIND.\033[0m"
+	echo ""
 
-for i in "${!big_params[@]}"
-do
-	TEMPFILE=$(mktemp)
-	echo -e "\033[1;94mTEST VALGRIND $((i + 1)): ./$NAME ${big_params[i]}\033[1;93m"
-	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --track-fds=yes ./$NAME ${big_params[i]} &> $TEMPFILE
+	for i in "${!big_params[@]}"
+	do
+		TEMPFILE=$(mktemp)
+		echo -e "\033[1;94mTEST VALGRIND $((i + 1)): ./$NAME ${big_params[i]}\033[1;93m"
+		valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --track-fds=yes ./$NAME ${big_params[i]} &> $TEMPFILE
 
-	def_lost_bytes=$(grep "definitely lost:" $TEMPFILE | awk '{print $4}')
-	ind_lost_bytes=$(grep "indirectly lost:" $TEMPFILE | awk '{print $4}')
-	pos_lost_bytes=$(grep "possibly lost:" $TEMPFILE | awk '{print $4}')
-	still_reach_bytes=$(grep "still reachable:" $TEMPFILE | awk '{print $4}')
-	suppressed_bytes=$(grep "suppressed:" $TEMPFILE | awk '{print $4}')
+		def_lost_bytes=$(grep "definitely lost:" $TEMPFILE | awk '{print $4}')
+		ind_lost_bytes=$(grep "indirectly lost:" $TEMPFILE | awk '{print $4}')
+		pos_lost_bytes=$(grep "possibly lost:" $TEMPFILE | awk '{print $4}')
+		still_reach_bytes=$(grep "still reachable:" $TEMPFILE | awk '{print $4}')
+		suppressed_bytes=$(grep "suppressed:" $TEMPFILE | awk '{print $4}')
 
-	if [[ $def_lost_bytes -gt 0 || $ind_lost_bytes -gt 0 || $pos_lost_bytes -gt 0 || $still_reach_bytes -gt 0 || $suppressed_bytes -gt 0 ]]; then
-		echo -e "\033[1;91m❌ Memory leaks detected :\033[0m"
-		grep -E "definitely lost:|indirectly lost:|possibly lost:|still reachable:|suppressed:" $TEMPFILE
-		((error_count++))
-	else
-		echo -e "\033[1;92m✅ No memory leaks detected.\033[0m"
-	fi
+		if [[ $def_lost_bytes -gt 0 || $ind_lost_bytes -gt 0 || $pos_lost_bytes -gt 0 || $still_reach_bytes -gt 0 || $suppressed_bytes -gt 0 ]]; then
+			echo -e "\033[1;91m❌ Memory leaks detected :\033[0m"
+			grep -E "definitely lost:|indirectly lost:|possibly lost:|still reachable:|suppressed:" $TEMPFILE
+			((error_count++))
+		else
+			echo -e "\033[1;92m✅ No memory leaks detected.\033[0m"
+		fi
 
-	HEAP_USAGE=$(grep -E "total heap usage:|in use at exit:" $TEMPFILE)
-	if [ -n "$HEAP_USAGE" ]; then
-		echo -e "\033[1;94total heap usage :\033[0m"
-		echo "$HEAP_USAGE"
-	fi
+		HEAP_USAGE=$(grep -E "total heap usage:|in use at exit:" $TEMPFILE)
+		if [ -n "$HEAP_USAGE" ]; then
+			echo -e "\033[1;94 Total heap usage :\033[0m"
+			echo "$HEAP_USAGE"
+		fi
 
-	ERROR_SUMMARY=$(grep -E "ERROR SUMMARY:" $TEMPFILE)
-	if [ -n "$ERROR_SUMMARY" ]; then
-		echo -e "\033[1;94mERROR SUMMARY:\033[0m"
-		echo "$ERROR_SUMMARY"
-	fi
+		ERROR_SUMMARY=$(grep -E "ERROR SUMMARY:" $TEMPFILE)
+		if [ -n "$ERROR_SUMMARY" ]; then
+			echo -e "\033[1;94mERROR SUMMARY:\033[0m"
+			echo "$ERROR_SUMMARY"
+		fi
 
-	rm $TEMPFILE
-done
+		rm $TEMPFILE
+	done
+fi
 
 echo -e "\033[1;94m _______  _   ___    _\033[0m"
 echo -e "\033[1;94m|  ____| |_| |   \  | |\033[0m"

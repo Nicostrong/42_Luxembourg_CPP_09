@@ -6,7 +6,7 @@
 #    By: nfordoxc <nfordoxc@42.luxembourg.lu>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/17 17:58:03 by nfordoxc          #+#    #+#              #
-#    Updated: 2025/03/21 14:03:04 by nfordoxc         ###   Luxembourg.lu      #
+#    Updated: 2025/03/28 09:58:21 by nfordoxc         ###   Luxembourg.lu      #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,11 +29,11 @@ ARG0			=	8 2 12 5 4 9 27 11 0 1 6 13 19 15 3
 
 ARG1			=	6 5 4 3 2 1 0
 
-ARG2			=	
+ARG2			=	9 8 7 6 5 4 3 2 1 -5
 
-ARG3			=	
+ARG3			=	5 4 8 toto 6 4 
 
-ARG4			=	
+ARG4			=	2 2 2 2 2 2 2.2
 
 RM				=	rm -f
 
@@ -218,20 +218,22 @@ $(NAME):	$(OBJ)
 %.o :		%.cpp
 	$(call compile_c_to_o)
 
-deb:		$(NAME)
+deb:			all
 	@echo "$(BBLUE)==========	RUN DEBUG MODE	==========$(RESET)"
 ifeq ($(arg),ARG0)
-	$(DEB) $(DEB_OPT) ./$(NAME) $(ARG0)
+	$(DEB) $(DEB_OPT) ./$(NAME) $(ARG0) $(DEB_OUT)
 else ifeq ($(arg),ARG1)
-	$(DEB) $(DEB_OPT) ./$(NAME) $(ARG1)
+	$(DEB) $(DEB_OPT) ./$(NAME) $(ARG1) $(DEB_OUT)
 else ifeq ($(arg),ARG2)
-	$(DEB) $(DEB_OPT) ./$(NAME) $(ARG2)
+	$(DEB) $(DEB_OPT) ./$(NAME) $(ARG2) $(DEB_OUT)
 else ifeq ($(arg),ARG3)
-	$(DEB) $(DEB_OPT) ./$(NAME) $(ARG3)
+	$(DEB) $(DEB_OPT) ./$(NAME) $(ARG3) $(DEB_OUT)
 else ifeq ($(arg),ARG4)
-	$(DEB) $(DEB_OPT) ./$(NAME) $(ARG4)
+	$(DEB) $(DEB_OPT) ./$(NAME) $(ARG4) $(DEB_OUT)
+else ifneq ($(arg),)
+	$(DEB) $(DEB_OPT) ./$(NAME) $(arg) $(DEB_OUT)
 else
-	@echo "$(RESET)Usage: make deb arg=ARG0|ARG1|ARG2|ARG3|ARG4"
+	@echo "$(RESET)Usage: make deb arg=ARG0|ARG1|ARG2|ARG3|ARG4|personal_arg"
 endif
 
 clean:

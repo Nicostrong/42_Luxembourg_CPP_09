@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PmergeMe.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nfordoxc <nfordoxc@42luxembourg.lu>        +#+  +:+       +#+        */
+/*   By: nfordoxc <nfordoxc@42.luxembourg.lu>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 16:04:33 by nfordoxc          #+#    #+#             */
-/*   Updated: 2025/03/27 11:19:51 by nfordoxc         ###   Luxembourg.lu     */
+/*   Updated: 2025/03/28 10:10:53 by nfordoxc         ###   Luxembourg.lu     */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,16 @@
 # define YELLOW		"\033[33m"
 # define BLUE		"\033[34m"
 
-class   PmergeMe
+class	PmergeMe
 {
 	private:
 
+		/*	CANONICAL FORM	*/
+		PmergeMe( void );
+		PmergeMe( PmergeMe const &obj_src );
+		~PmergeMe( void );
+		PmergeMe				&operator=( PmergeMe const &obj_src );
+		
 		/*	PRIVATE METHOD	*/
 		static int				ft_atoi( char *toConvert );
 		
