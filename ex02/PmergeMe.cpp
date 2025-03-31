@@ -31,6 +31,8 @@ int					PmergeMe::ft_atoi( char *toConvert )
 		throw PmergeMe::NegativeValueInput();
 	if (*toConvert == '+')
 		toConvert++;
+	while (*toConvert == '0')
+		toConvert++;
 	if (!std::isdigit(*toConvert))
 		throw PmergeMe::NoNumericValueInput();
 	while (std::isdigit(*toConvert))
