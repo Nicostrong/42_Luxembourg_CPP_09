@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Ford_tester.sh                                     :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: nfordoxc <nfordoxc@42.luxembourg.lu>       +#+  +:+       +#+         #
+#    By: nfordoxc <nfordoxc@42luxembourg.lu>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/27 11:31:45 by nfordoxc          #+#    #+#              #
-#    Updated: 2025/03/28 08:55:05 by nfordoxc         ###   Luxembourg.lu      #
+#    Updated: 2025/03/31 07:14:32 by nfordoxc         ###   Luxembourg.lu      #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,6 +23,7 @@ bad_params=(
 	"2 7,3 5"
 	"8 6 2a 0"
 	"6 2 jlkshdfg jklshfg sjdlkgh dsjkgh sdjkgh sdf 0"
+	"0 18446744073709551616 10"
 )
 
 good_params=(

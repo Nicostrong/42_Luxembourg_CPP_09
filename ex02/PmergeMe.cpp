@@ -6,7 +6,7 @@
 /*   By: nfordoxc <nfordoxc@42luxembourg.lu>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 16:04:43 by nfordoxc          #+#    #+#             */
-/*   Updated: 2025/03/27 16:49:15 by nfordoxc         ###   Luxembourg.lu     */
+/*   Updated: 2025/03/31 07:15:34 by nfordoxc         ###   Luxembourg.lu     */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,10 @@
 int					PmergeMe::ft_atoi( char *toConvert )
 {
 	long long	nb;
+	int			len;
 
 	nb = 0;
+	len = 0;
 	if (!toConvert || !*toConvert)
 		throw PmergeMe::NoNumericValueInput();
 	while (std::isspace(*toConvert))
@@ -35,8 +37,9 @@ int					PmergeMe::ft_atoi( char *toConvert )
 	{
 		nb = (nb * 10) + (*toConvert - '0');
 		toConvert++;
+		len++;
 	}
-	if (nb > INT_MAX || nb < INT_MIN)
+	if (nb > INT_MAX || nb < INT_MIN || len > 10)
 		throw PmergeMe::NotIntegerValue();
 	if (*toConvert)
 		throw PmergeMe::NoNumericValueInput();
